@@ -1,0 +1,34 @@
+{
+    "name": "hoobr-config-reader",
+    "description": "Configuration reading module for hoobr.",
+    "version": "0.0.1",
+    "author": {
+        "name": "Ric Allinson",
+        "email": "npm@ricallinson.com"
+    },
+    "engines": {
+        "php": ">= 5.4.0"
+    },
+    "config": {
+        "hoobr": {
+            "version": "*",
+            "type": "library",
+            "core": "true"
+        }
+    },
+    "dependencies" : {
+        
+    },
+    "devDependencies" : {
+        "php-require": "git://github.com/ricallinson/php-require.git#master",
+        "php-tester": "git://github.com/ricallinson/php-tester.git#master"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git@github.com:ricallinson/hoobr-content-store.git"
+    },
+    "scripts": {
+        "test": "./test/run"
+    },
+    "license": "MIT"
+}
