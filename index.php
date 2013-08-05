@@ -28,6 +28,21 @@ class HoobrConfigReader {
         $this->config = array_merge($defaultConfig, $overrideConfig);
     }
 
+    public function write() {
+
+        $file = "<?php\n\$module->exports = array(\n";
+
+        foreach ($this->config as $key => $value) {
+            $file .= "    \"" . $key . "\" => \"" . $value . "\",\n";
+        }
+
+        $file = substr($file, 0, -2) . "\n);\n";
+
+        echo $this->overrideModule . "\n";
+
+        echo $file . "\n";
+    }
+
     public function put($key, $val) {
 
         if (!isset($this->config[$key])) {

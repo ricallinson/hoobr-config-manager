@@ -47,4 +47,13 @@ describe("hoobr-config-reader", function () use ($reader) {
         assert($config->put("key4", "val4") === false);
         assert($config->get("key4") === null);
     });
+
+    it("should return []", function () use ($reader) {
+
+        $config = $reader("sample", "./fixtures", "./fixtures/node_modules");
+
+        $config->write();
+
+        assert(false);
+    });
 });
