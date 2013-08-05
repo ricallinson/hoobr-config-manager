@@ -11,9 +11,17 @@ class HoobrConfigReader {
 
         $pathlib = $require("php-path");
 
-        $this->overrideModule = $pathlib->join($overrideDir, $module);
+        $this->overrideModule = $module;
 
-        $this->defaultModule = $pathlib->join($defaultsDir, $module, "lib", "config");
+        if ($overrideDir) {
+            $this->overrideModule = $pathlib->join($overrideDir, $module);
+        }
+
+        $this->defaultModule = $pathlib->join($module, "lib", "config");
+
+        if ($defaultsDir) {
+            $this->defaultModule = $pathlib->join($defaultsDir, $this->defaultModule);
+        }
 
         $this->read();
     }
@@ -66,7 +74,7 @@ class HoobrConfigReader {
         $bytesWriten = file_put_contents($tmpfile, $phpstring);
 
         if ($bytesWriten !== strlen($phpstring)) {
-            echo ">>> Error writing file.";
+            echo "hoobr-config-reader: Error writing file.";
             unlink($tmpfile);
             return false;
         }
@@ -78,7 +86,7 @@ class HoobrConfigReader {
         $status = copy($defaultFile, $backupFile);
 
         if ($status === false) {
-            echo ">>> Error copying source file.";
+            echo "hoobr-config-reader: Error copying source file.";
             unlink($tmpfile);
             return false;
         }
@@ -90,7 +98,7 @@ class HoobrConfigReader {
         $status = rename($tmpfile, $defaultFile);
 
         if ($status === false) {
-            echo ">>> Error renaming temporary file.";
+            echo "hoobr-config-reader: Error renaming temporary file.";
             unlink($tmpfile);
             return false;
         }
@@ -123,6 +131,6 @@ class HoobrConfigReader {
     }
 }
 
-$module->exports = function ($module, $overrideDir = "./", $defaultsDir = "") {
+$module->exports = function ($module, $overrideDir = "", $defaultsDir = "") {
     return new HoobrConfigReader($module, $overrideDir, $defaultsDir);
 };
