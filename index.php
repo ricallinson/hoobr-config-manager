@@ -30,10 +30,30 @@ class HoobrConfigReader {
 
         global $require;
 
+        /*
+            Set the config and merge in any overrides found.
+        */
+
         $defaultConfig = $require($this->defaultModule);
         $overrideConfig = $require($this->overrideModule);
 
         $this->config = array_merge($defaultConfig, $overrideConfig);
+
+        /*
+            Are we in a bucket?
+
+            If so we process all info here so we don't slow down the request for standard users.
+        */
+
+        $bucketId = $require("php-http/request")->cookie("hoobr-bucket");
+
+        if (!$bucketId) {
+            return;
+        }
+
+        $bucketConfig = $require($this->overrideModule . ".bucket." . $bucketId);
+
+        $this->config = array_merge($this->config, $bucketConfig);
     }
 
     public function write() {
