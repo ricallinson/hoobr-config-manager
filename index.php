@@ -13,9 +13,9 @@ class HoobrConfigReader {
 
         global $require;
 
-        $configPath = $require("php-path")->join("./", $module, "config");
-        $defaultConfig = $require($module);
-        $overrideConfig = $require($configPath);
+        $pathlib = $require("php-path");
+        $defaultConfig = $require($pathlib->join($module, "lib", "config"));
+        $overrideConfig = $require($pathlib->join("./", $module));
 
         $this->config = array_merge($defaultConfig, $overrideConfig);
     }
