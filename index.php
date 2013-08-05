@@ -5,7 +5,12 @@ class HoobrConfigReader {
 
     private $config = array();
 
-    public function __construct($module) {
+    public function __construct($module, $overrideDir, $nodeModulesDir) {
+
+        $this->overrideDir = $overrideDir;
+
+        $this->nodeModulesDir = $nodeModulesDir;
+
         $this->read($module);
     }
 
@@ -14,8 +19,12 @@ class HoobrConfigReader {
         global $require;
 
         $pathlib = $require("php-path");
-        $defaultConfig = $require($pathlib->join($module, "lib", "config"));
-        $overrideConfig = $require($pathlib->join("./", $module));
+
+        $overridePath = $pathlib->join($this->overrideDir, $module);
+        $defaultPath = $pathlib->join($this->nodeModulesDir, $module, "lib", "config");
+
+        $overrideConfig = $require($overridePath);
+        $defaultConfig = $require($defaultPath);
 
         $this->config = array_merge($defaultConfig, $overrideConfig);
     }
@@ -31,7 +40,11 @@ class HoobrConfigReader {
         return true;
     }
 
-    public function get($key) {
+    public function get($key = null) {
+
+        if ($key === null) {
+            return $this->config;
+        }
 
         if (!isset($this->config[$key])) {
             return false;
@@ -41,6 +54,6 @@ class HoobrConfigReader {
     }
 }
 
-$module->exports = function ($module) {
-    return new HoobrConfig($module);
+$module->exports = function ($module, $overrideDir = "./", $nodeModulesDir = "") {
+    return new HoobrConfigReader($module, $overrideDir, $nodeModulesDir);
 };
