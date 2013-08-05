@@ -16,44 +16,50 @@ $reader = $module->exports;
 
 describe("hoobr-config-reader", function () use ($reader) {
 
-    it("should return [value2]", function () use ($reader) {
+    global $require;
 
-        $config = $reader("sample", "./fixtures", "./fixtures/node_modules");
+    $pathlib = $require("php-path");
+    $overrideModuleDir = $pathlib->join(__DIR__, "./fixtures");
+    $defaultsModuleDir = $pathlib->join(__DIR__, "./fixtures/node_modules");
+
+    it("should return [value2]", function () use ($reader, $overrideModuleDir, $defaultsModuleDir) {
+
+        $config = $reader("sample", $overrideModuleDir, $defaultsModuleDir);
 
         assert($config->get("key2") === "value2");
     });
 
-    it("should return [val1]", function () use ($reader) {
+    it("should return [val1]", function () use ($reader, $overrideModuleDir, $defaultsModuleDir) {
 
-        $config = $reader("sample", "./fixtures", "./fixtures/node_modules");
+        $config = $reader("sample", $overrideModuleDir, $defaultsModuleDir);
 
         $array = $config->get();
 
         assert($array["key1"] === "val1");
     });
 
-    it("should return [true]", function () use ($reader) {
+    it("should return [true]", function () use ($reader, $overrideModuleDir, $defaultsModuleDir) {
 
-        $config = $reader("sample", "./fixtures", "./fixtures/node_modules");
+        $config = $reader("sample", $overrideModuleDir, $defaultsModuleDir);
 
         assert($config->put("key3", "value3") === true);
         assert($config->get("key3") === "value3");
     });
 
-    it("should return [false]", function () use ($reader) {
+    it("should return [false]", function () use ($reader, $overrideModuleDir, $defaultsModuleDir) {
 
-        $config = $reader("sample", "./fixtures", "./fixtures/node_modules");
+        $config = $reader("sample", $overrideModuleDir, $defaultsModuleDir);
 
         assert($config->put("key4", "val4") === false);
         assert($config->get("key4") === null);
     });
 
-    it("should return []", function () use ($reader) {
+    it("should return []", function () use ($reader, $overrideModuleDir, $defaultsModuleDir) {
 
-        $config = $reader("sample", "./fixtures", "./fixtures/node_modules");
+        $config = $reader("sample", $overrideModuleDir, $defaultsModuleDir);
 
-        $config->write();
+        $result = $config->write();
 
-        assert(false);
+        assert($result === true);
     });
 });

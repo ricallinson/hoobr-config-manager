@@ -5,7 +5,7 @@ class HoobrConfigReader {
 
     private $config = array();
 
-    public function __construct($module, $overrideDir, $nodeModulesDir) {
+    public function __construct($module, $overrideDir, $defaultsDir) {
 
         global $require;
 
@@ -13,7 +13,7 @@ class HoobrConfigReader {
 
         $this->overrideModule = $pathlib->join($overrideDir, $module);
 
-        $this->defaultModule = $pathlib->join($nodeModulesDir, $module, "lib", "config");
+        $this->defaultModule = $pathlib->join($defaultsDir, $module, "lib", "config");
 
         $this->read();
     }
@@ -30,17 +30,72 @@ class HoobrConfigReader {
 
     public function write() {
 
+        global $require;
+
+        $defaultConfig = $require($this->defaultModule);
+
+        /*
+            Build the PHP array module.
+        */
+
         $file = "<?php\n\$module->exports = array(\n";
 
         foreach ($this->config as $key => $value) {
-            $file .= "    \"" . $key . "\" => \"" . $value . "\",\n";
+
+            /*
+                Only store values that re different from the defaults.
+            */
+
+            if ($defaultConfig[$key] !== $value) {
+                $file .= "    \"" . $key . "\" => \"" . $value . "\",\n";
+            }
         }
 
-        $file = substr($file, 0, -2) . "\n);\n";
+        $phpstring = substr($file, 0, -2) . "\n);\n";
 
-        echo $this->overrideModule . "\n";
+        $tmpfile = $this->overrideModule . "." . uniqid(true) . ".php";
+        $defaultFile = $this->overrideModule . ".php";
+        $backupFile = $this->overrideModule . "." . round(microtime(true), 0) . ".php";
 
-        echo $file . "\n";
+        var_dump($tmpfile, $defaultFile, $backupFile);
+
+        /*
+            Write the tmp file.
+        */
+
+        $bytesWriten = file_put_contents($tmpfile, $phpstring);
+
+        if ($bytesWriten !== strlen($phpstring)) {
+            echo ">>> Error writing file.";
+            unlink($tmpfile);
+            return false;
+        }
+
+        /*
+            Copy the default into a backup.
+        */
+
+        $status = copy($defaultFile, $backupFile);
+
+        if ($status === false) {
+            echo ">>> Error copying source file.";
+            unlink($tmpfile);
+            return false;
+        }
+
+        /*
+            Replace the default with the tmp file.
+        */
+
+        $status = rename($tmpfile, $defaultFile);
+
+        if ($status === false) {
+            echo ">>> Error renaming temporary file.";
+            unlink($tmpfile);
+            return false;
+        }
+
+        return true;
     }
 
     public function put($key, $val) {
@@ -68,6 +123,6 @@ class HoobrConfigReader {
     }
 }
 
-$module->exports = function ($module, $overrideDir = "./", $nodeModulesDir = "") {
-    return new HoobrConfigReader($module, $overrideDir, $nodeModulesDir);
+$module->exports = function ($module, $overrideDir = "./", $defaultsDir = "") {
+    return new HoobrConfigReader($module, $overrideDir, $defaultsDir);
 };
