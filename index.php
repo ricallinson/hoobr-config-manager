@@ -45,7 +45,7 @@ class HoobrConfigReader {
             If so we process all info here so we don't slow down the request for standard users.
         */
 
-        $bucketId = $require("php-http/request")->cookie("hoobr-bucket");
+        $bucketId = $require("php-http/request")->cfg("site/bucket");
 
         if (!$bucketId) {
             return;
