@@ -1,5 +1,5 @@
 {
-    "name": "hoobr-config-reader",
+    "name": "hoobr-config-manager",
     "description": "Configuration reading module for hoobr.",
     "version": "0.0.1",
     "author": {
@@ -26,7 +26,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "git@github.com:ricallinson/hoobr-content-store.git"
+        "url": "git@github.com:ricallinson/hoobr-content-manager.git"
     },
     "scripts": {
         "test": "./test/run"
