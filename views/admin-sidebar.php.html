@@ -1,10 +1,28 @@
+<?php if ($showBuckets) {?>
+<div class="panel">
+    <div class="panel-heading">
+        <h3 class="panel-title">Buckets for <?php echo $currentModule;?></h3>
+    </div>
+    <ul class="nav nav-pills nav-stacked">
+        <?php foreach ($buckets as $bucketId) {?>
+        <li<?php if ($bucketId == $currentBucketId) {?> class="active"<?php }?>>
+            <a href="?page=admin&amp;module=hoobr-config-manager&amp;action=main&amp;config-module=<?php echo $currentModule;?>&amp;config-bucket-id=<?php echo $bucketId;?>"><?php echo $bucketId;?></a>
+        </li>
+        <?php }?>
+        <li>
+            <a href="?page=admin&amp;module=hoobr-config-manager&amp;action=new-bucket&amp;config-module=<?php echo $currentModule;?>">Create a new bucket</a>
+        </li>
+    </ul>
+</div>
+<?php }?>
+
 <div class="panel">
     <div class="panel-heading">
         <h3 class="panel-title">Installed Modules</h3>
     </div>
     <ul class="nav nav-pills nav-stacked">
-        <?php foreach ($list as $module) {?>
-        <li<?php if ($module == $current) {?> class="active"<?php }?>>
+        <?php foreach ($modules as $module) {?>
+        <li<?php if ($module == $currentModule) {?> class="active"<?php }?>>
             <a href="?page=admin&amp;module=hoobr-config-manager&amp;action=main&amp;config-module=<?php echo $module;?>"><?php echo $module;?></a>
         </li>
         <?php }?>

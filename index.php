@@ -12,13 +12,21 @@ $utils = $require("hoobr-packages/lib/utils");
     Show the sidebar with links to all modules.
 */
 
-$exports["admin-sidebar"] = function () use ($req, $render, $pathlib, $utils) {
+$exports["admin-sidebar"] = function () use ($req, $render, $pathlib, $utils, $configReader) {
 
-    $list = $utils->getModuleList($req->cfg("approot"));
+    $module = $req->param("config-module");
+    $config = $configReader($module, $req->cfg("cfgroot"));
+    $showBuckets = count($config->get()) > 0;
+    $bucketId = $req->param("config-bucket-id");
+    $buckets = array("1234");
+    $modules = $utils->getModuleList($req->cfg("approot"));
 
     return $render($pathlib->join(__DIR__, "views", "admin-sidebar.php.html"), array(
-        "list" => $list,
-        "current" => $req->param("config-module")
+        "buckets" => $buckets,
+        "modules" => $modules,
+        "currentModule" => $module,
+        "currentBucketId" => $bucketId,
+        "showBuckets" => $showBuckets
     ));
 };
 
@@ -41,17 +49,17 @@ $exports["admin-main"] = function () use ($require, $req, $render, $pathlib, $co
         ));
     }
 
-    $overrides = $require($config->overrideModule);
+    $overrideConfig = $require($config->overrideModule);
 
-    $buckets = $require($config->makeBucketModulePath($bucketId));
+    $bucketConfig = $require($config->makeBucketModulePath($bucketId));
 
     $table = array();
 
     foreach ($defaults as $key => $default) {
 
-        $override = $req->find($key, $overrides);
+        $override = $req->find($key, $overrideConfig);
 
-        $bucket = $req->find($key, $buckets);
+        $bucket = $req->find($key, $bucketConfig);
 
         $table[$key] = array(
             "default" => $default,
@@ -63,8 +71,7 @@ $exports["admin-main"] = function () use ($require, $req, $render, $pathlib, $co
     return $render($pathlib->join(__DIR__, "views", "admin-main.php.html"), array(
         "module" => $module,
         "table" => $table,
-        "bucketId" => $bucketId,
-        "buckets" => array()
+        "bucketId" => $bucketId
     ));
 };
 
@@ -73,5 +80,13 @@ $exports["admin-save"] = function () use ($req, $res) {
     $module = $req->param("config-module");
     $bucketId = $req->param("config-bucket-id");
 
-    $res->redirect("?page=admin&module=hoobr-config-manager&action=main&config-module=" . $module . "&bucket-id=" . $bucketId);
+    $res->redirect("?page=admin&module=hoobr-config-manager&action=main&config-module=" . $module . "&config-bucket-id=" . $bucketId);
+};
+
+$exports["admin-new-bucket"] = function () use ($req, $res) {
+
+    $module = $req->param("config-module");
+    $bucketId = uniqid();
+
+    $res->redirect("?page=admin&module=hoobr-config-manager&action=main&config-module=" . $module . "&config-bucket-id=" . $bucketId);
 };
