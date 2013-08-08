@@ -7,7 +7,7 @@ ini_set('display_errors', 'on');
 */
 
 $module = new stdClass();
-require(__DIR__ . "/../index.php");
+require(__DIR__ . "/../lib/index.php");
 $reader = $module->exports;
 
 /*
