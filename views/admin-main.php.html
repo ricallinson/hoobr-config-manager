@@ -4,7 +4,20 @@
 	</div>
 	<form method="post" class="form-horizontal">
 
-		<div class="form-group hidden-md">
+		<div class="form-group">
+			<label class="col-lg-9 control-label">Bucket</label>
+			<div class="col-lg-3">
+				<select class="form-control" name="config-bucket-id">
+					<option value="">None</option>
+					<?php foreach ($buckets as $bucket) {?>
+					<option value="<?php echo $bucket;?>"<?php if ($bucketId === $bucket) {?>selected<?php }?>>1234</option>
+					<?php }?>
+					<option value="new">New Bucket</option>
+				</select>
+			</div>
+		</div>
+
+		<div class="form-group visible-lg">
 			<label class="col-lg-3 control-label">Key</label>
 			<label class="col-lg-3 control-label">Default</label>
 			<label class="col-lg-3 control-label">Override</label>
@@ -27,11 +40,11 @@
 		<?php }?>
 
 		<div class="container">
+			<a href="?page=admin&amp;module=hoobr-config-manager&amp;action=main&amp;config-module=<?php echo $module;?>" class="btn btn-default">Cancel</a>
 			<input class="btn btn-primary pull-right" type="submit" value="Save"></input>
 			<input type="hidden" name="page" value="admin"></input>
 			<input type="hidden" name="module" value="hoobr-config-manager"></input>
 			<input type="hidden" name="action" value="save"></input>
-			<input type="hidden" name="config-bucket-id" value="<?php echo $bucketId;?>"></input>
 			<input type="hidden" name="config-module" value="<?php echo $module;?>"></input>
 		</div>
 	</fom>

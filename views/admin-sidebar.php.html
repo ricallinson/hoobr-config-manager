@@ -1,0 +1,12 @@
+<div class="panel">
+    <div class="panel-heading">
+        <h3 class="panel-title">Installed Modules</h3>
+    </div>
+    <ul class="nav nav-pills nav-stacked">
+        <?php foreach ($list as $module) {?>
+        <li<?php if ($module == $current) {?> class="active"<?php }?>>
+            <a href="?page=admin&amp;module=hoobr-config-manager&amp;action=main&amp;config-module=<?php echo $module;?>"><?php echo $module;?></a>
+        </li>
+        <?php }?>
+    </ul>
+</div>

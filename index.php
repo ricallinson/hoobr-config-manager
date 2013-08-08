@@ -6,9 +6,20 @@ $res = $require("php-http/response");
 $render = $require("php-render-php");
 $pathlib = $require("php-path");
 $configReader = $require("hoobr-config-manager/lib/parser");
+$utils = $require("hoobr-packages/lib/utils");
 
-$exports["admin-sidebar"] = function () use ($req, $render) {
-    return "";
+/*
+    Show the sidebar with links to all modules.
+*/
+
+$exports["admin-sidebar"] = function () use ($req, $render, $pathlib, $utils) {
+
+    $list = $utils->getModuleList($req->cfg("approot"));
+
+    return $render($pathlib->join(__DIR__, "views", "admin-sidebar.php.html"), array(
+        "list" => $list,
+        "current" => $req->param("config-module")
+    ));
 };
 
 /*
@@ -18,11 +29,17 @@ $exports["admin-sidebar"] = function () use ($req, $render) {
 $exports["admin-main"] = function () use ($require, $req, $render, $pathlib, $configReader) {
 
     $module = $req->param("config-module");
-    $bucketId = $req->param("config-bucket-id", 1234);
+    $bucketId = $req->param("config-bucket-id");
 
     $config = $configReader($module, $req->cfg("cfgroot"));
 
     $defaults = $require($config->defaultModule);
+
+    if (!count($defaults)) {
+        return $render($pathlib->join(__DIR__, "views", "admin-empty.php.html"), array(
+            "module" => $module
+        ));
+    }
 
     $overrides = $require($config->overrideModule);
 
@@ -46,7 +63,8 @@ $exports["admin-main"] = function () use ($require, $req, $render, $pathlib, $co
     return $render($pathlib->join(__DIR__, "views", "admin-main.php.html"), array(
         "module" => $module,
         "table" => $table,
-        "bucketId" => $bucketId
+        "bucketId" => $bucketId,
+        "buckets" => array()
     ));
 };
 
