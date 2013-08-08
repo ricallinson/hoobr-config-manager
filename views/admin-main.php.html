@@ -1,0 +1,38 @@
+<div class="panel">
+	<div class="panel-heading">
+		<h3 class="panel-title">Configuration for <?php echo $module;?></h3>
+	</div>
+	<form method="post" class="form-horizontal">
+
+		<div class="form-group hidden-md">
+			<label class="col-lg-3 control-label">Key</label>
+			<label class="col-lg-3 control-label">Default</label>
+			<label class="col-lg-3 control-label">Override</label>
+			<label class="col-lg-3 control-label">Bucket</label>
+		</div>
+
+		<?php foreach ($table as $key => $row) {?>
+		<div class="form-group">
+			<label class="col-lg-3 control-label"><?php echo $key;?></label>
+			<div class="col-lg-3">
+				<input class="form-control" type="text" name="override/<?php echo $key;?>" value="<?php echo $row["default"];?>" disabled></input>
+			</div>
+			<div class="col-lg-3">
+				<input class="form-control" type="text" name="override/<?php echo $key;?>" value="<?php echo $row["override"];?>"></input>
+			</div>
+			<div class="col-lg-3">
+				<input class="form-control" type="" name="bucket/<?php echo $key;?>" value="<?php echo $row["bucket"];?>"></input>
+			</div>
+		</div>
+		<?php }?>
+
+		<div class="container">
+			<input class="btn btn-primary pull-right" type="submit" value="Save"></input>
+			<input type="hidden" name="page" value="admin"></input>
+			<input type="hidden" name="module" value="hoobr-config-manager"></input>
+			<input type="hidden" name="action" value="save"></input>
+			<input type="hidden" name="config-bucket-id" value="<?php echo $bucketId;?>"></input>
+			<input type="hidden" name="config-module" value="<?php echo $module;?>"></input>
+		</div>
+	</fom>
+</div>

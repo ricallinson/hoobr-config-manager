@@ -5,6 +5,10 @@ class HoobrConfigReader {
 
     private $config = array();
 
+    public $defaultModule = null;
+
+    public $overrideModule = null;
+
     public function __construct($module, $overrideDir, $defaultsDir) {
 
         global $require;
@@ -51,7 +55,7 @@ class HoobrConfigReader {
             return;
         }
 
-        $bucketConfig = $require($this->overrideModule . ".bucket." . $bucketId);
+        $bucketConfig = $require($this->makeBucketModulePath($bucketId));
 
         $this->config = array_merge($this->config, $bucketConfig);
     }
@@ -148,6 +152,10 @@ class HoobrConfigReader {
         }
 
         return $this->config[$key];
+    }
+
+    public function makeBucketModulePath($bucketId) {
+        return $this->overrideModule . ".bucket." . $bucketId;
     }
 }
 
