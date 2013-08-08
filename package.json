@@ -12,7 +12,7 @@
     "config": {
         "hoobr": {
             "version": "*",
-            "type": "library",
+            "type": "module",
             "core": "true"
         }
     },
