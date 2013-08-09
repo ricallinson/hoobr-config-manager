@@ -75,10 +75,25 @@ $exports["admin-main"] = function () use ($require, $req, $render, $pathlib, $co
     ));
 };
 
-$exports["admin-save"] = function () use ($req, $res) {
+$exports["admin-save"] = function () use ($req, $res, $configReader) {
 
     $module = $req->param("config-module");
     $bucketId = $req->param("config-bucket-id");
+
+    $config = $configReader($module, $req->cfg("cfgroot"));
+
+    foreach ($config->get() as $key => $value) {
+        $newValue = $req->param("override/" . $key);
+        if ($newValue) {
+            $config->put($key, $newValue);
+        }
+    }
+
+    $status = $config->write();
+
+    if (!$status) {
+        return "Error saving override configuration for module: " . $module;
+    }
 
     $res->redirect("?page=admin&module=hoobr-config-manager&action=main&config-module=" . $module . "&config-bucket-id=" . $bucketId);
 };
@@ -87,6 +102,8 @@ $exports["admin-delete-bucket"] = function () use ($req, $res) {
 
     $module = $req->param("config-module");
     $bucketId = $req->param("config-bucket-id");
+
+    // Save bucket
 
     $res->redirect("?page=admin&module=hoobr-config-manager&action=main&config-module=" . $module);
 };
