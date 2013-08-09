@@ -82,28 +82,58 @@ $exports["admin-save"] = function () use ($req, $res, $configReader) {
 
     $config = $configReader($module, $req->cfg("cfgroot"));
 
-    foreach ($config->get() as $key => $value) {
-        $newValue = $req->param("override/" . $key);
-        if ($newValue) {
-            $config->put($key, $newValue);
+    if (!$bucketId) {
+
+        foreach ($config->get() as $key => $value) {
+            $newValue = $req->param("override/" . $key);
+            if ($newValue) {
+                $config->put($key, $newValue);
+            }
+        }
+
+        $status = $config->write();
+
+        if ($status) {
+            $status = $config->delete(4);
+        }
+
+    } else {
+
+        $bucketConfig = array();
+
+        foreach ($config->get() as $key => $value) {
+            $newValue = $req->param("bucket/" . $key);
+            if ($newValue) {
+                $bucketConfig[$key] = $newValue;
+            }
+        }
+
+        $status = $config->writeBucket($bucketId, $bucketConfig);
+
+        if ($status) {
+            $status = $config->deleteBucket($bucketId, 4);
         }
     }
 
-    $status = $config->write();
-
     if (!$status) {
-        return "Error saving override configuration for module: " . $module;
+        return "Error saving configuration for module: " . $module;
     }
 
     $res->redirect("?page=admin&module=hoobr-config-manager&action=main&config-module=" . $module . "&config-bucket-id=" . $bucketId);
 };
 
-$exports["admin-delete-bucket"] = function () use ($req, $res) {
+$exports["admin-delete-bucket"] = function () use ($req, $res, $configReader) {
 
     $module = $req->param("config-module");
     $bucketId = $req->param("config-bucket-id");
 
-    // Save bucket
+    $config = $configReader($module, $req->cfg("cfgroot"));
+
+    $status = $config->deleteBucket($bucketId, 0);
+
+    if (!$status) {
+        return "Error deleting configuration for module bucket: " . $module . ":" . $bucketId;
+    }
 
     $res->redirect("?page=admin&module=hoobr-config-manager&action=main&config-module=" . $module);
 };

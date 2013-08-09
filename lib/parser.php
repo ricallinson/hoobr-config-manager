@@ -34,6 +34,30 @@ class HoobrConfigReader {
         $this->read();
     }
 
+    public function put($key, $val) {
+
+        if (!isset($this->config[$key])) {
+            return false;
+        }
+
+        $this->config[$key] = $val;
+
+        return true;
+    }
+
+    public function get($key = null) {
+
+        if ($key === null) {
+            return $this->config;
+        }
+
+        if (!isset($this->config[$key])) {
+            return null;
+        }
+
+        return $this->config[$key];
+    }
+
     private function read() {
 
         global $require;
@@ -70,30 +94,39 @@ class HoobrConfigReader {
 
         $defaultConfig = $require($this->defaultModule);
 
+        return $this->writeDelta($this->config, $defaultConfig, $this->overrideModule);
+    }
+
+    public function writeBucket($id, $config) {
+        return $this->writeDelta($config, $this->get(), $this->makeBucketModulePath($id));
+    }
+
+    public function writeDelta($config, $base, $filepath) {
+
         /*
             Build the PHP array module.
         */
 
-        $file = "<?php\n\$module->exports = array(\n";
+        $file = "<?php\n\$module->exports = array(\n\n";
 
-        foreach ($this->config as $key => $value) {
+        foreach ($config as $key => $value) {
 
             /*
                 Only store values that re different from the defaults.
             */
 
-            if ($defaultConfig[$key] !== $value) {
+            if ($base[$key] !== $value) {
                 $file .= "    \"" . $key . "\" => \"" . $value . "\",\n";
             }
         }
 
-        $phpstring = substr($file, 0, -2) . "\n);\n";
+        $phpstring = substr($file, 0, -2) . "\n\n);\n";
 
-        $tmpfile = $this->overrideModule . "." . uniqid(true) . ".php";
-        $defaultFile = $this->overrideModule . ".php";
-        $backupFile = $this->overrideModule . "." . round(microtime(true), 0) . ".php";
+        $tmpfile = $filepath . "." . uniqid(true) . ".php";
+        $defaultFile = $filepath . ".php";
+        $backupFile = $filepath . "." . round(microtime(true), 0) . ".php";
 
-        var_dump($tmpfile, $defaultFile, $backupFile);
+        // var_dump($tmpfile, $defaultFile, $backupFile);
 
         /*
             Write the tmp file.
@@ -108,10 +141,14 @@ class HoobrConfigReader {
         }
 
         /*
-            Copy the default into a backup.
+            Copy the default into a backup (but only if it exists).
         */
 
-        $status = copy($defaultFile, $backupFile);
+        $status = true;
+
+        if (is_file($defaultFile)) {
+            $status = copy($defaultFile, $backupFile);
+        }
 
         if ($status === false) {
             echo "hoobr-config-reader: Error copying source file.";
@@ -134,28 +171,64 @@ class HoobrConfigReader {
         return true;
     }
 
-    public function put($key, $val) {
+    /*
+        Deletes configuration files up to the $history count.
 
-        if (!isset($this->config[$key])) {
-            return false;
-        }
+        Set history to 0 to delete all files.
+    */
 
-        $this->config[$key] = $val;
-
-        return true;
+    public function delete($history = 4) {
+        return $this->deleteFiles($this->overrideModule, $history, "bucket");
     }
 
-    public function get($key = null) {
+    public function deleteBucket($id, $history = 4) {
+        return $this->deleteFiles($this->makeBucketModulePath($id), $history);
+    }
 
-        if ($key === null) {
-            return $this->config;
+    public function deleteFiles($filepath, $history, $skip = "") {
+
+        global $require;
+
+        $pathlib = $require("php-path");
+
+        $dir = dirname($filepath);
+
+        $files = scandir($dir);
+
+        $configs = array();
+
+        $match = basename($filepath);
+
+        foreach ($files as $file) {
+
+            if (!in_array($file, array(".", ".."))) {
+
+                if (strpos($file, $match) === 0 && strpos($file, $skip) === false) {
+                    array_push($configs, $file);
+                }
+            }
         }
 
-        if (!isset($this->config[$key])) {
-            return null;
+        if (count($configs) < $history) {
+            return true;
         }
 
-        return $this->config[$key];
+        sort($configs); // make sure
+
+        // The last item is always the current config so move it to the top.
+        // array_unshift($configs, array_pop($configs));
+        $delete = array_slice($configs, 0, count($configs) - $history);
+
+        $status = true;
+
+        // now delete each file in the $delete array.
+        foreach ($delete as $file) {
+            if (!unlink($pathlib->join($dir, $file))) {
+                $status = false;
+            }
+        }
+
+        return $status;
     }
 
     public function makeBucketModulePath($bucketId) {
@@ -171,9 +244,20 @@ class HoobrConfigReader {
         $files = scandir($dir);
 
         foreach ($files as $file) {
+
             if (!in_array($file, array(".", "..")) && strpos($file, $this->moduleName . ".bucket.") !== false) {
+
+                /*
+                    Here it is assumed that the bucket file name is in the form;
+
+                    [module].bucket.[bucketId].php
+                */
+
                 $bucketId = explode(".", $file);
-                array_push($ids, $bucketId[count($bucketId) - 2]);
+
+                if (count($bucketId) === 4) {
+                    array_push($ids, $bucketId[2]);
+                }
             }
         }
 
