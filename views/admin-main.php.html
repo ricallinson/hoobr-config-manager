@@ -5,8 +5,7 @@
 	<form method="post" class="form-horizontal">
 
 		<div class="form-group visible-lg">
-			<label class="col-lg-3 control-label">Key</label>
-			<label class="col-lg-3 control-label">Default</label>
+			<label class="col-lg-6 control-label">Default</label>
 			<label class="col-lg-3 control-label">Override</label>
 			<?php if ($bucketId) {?>
 			<label class="col-lg-3 control-label">Bucket <em><?php echo $bucketId;?></em></label>
@@ -31,7 +30,8 @@
 		<div class="container">
 			<a href="?page=admin&amp;module=hoobr-config-manager&amp;action=main&amp;config-module=<?php echo $module;?>" class="btn btn-primary">Reload</a>
 			<?php if ($bucketId) {?>
-			<a href="?page=admin&amp;module=hoobr-config-manager&amp;action=main&amp;config-module=<?php echo $module;?>" class="btn btn-danger">Delete bucket <?php echo $bucketId;?></a>
+			<a href="?page=admin&amp;module=hoobr-config-manager&amp;action=delete-bucket&amp;config-module=<?php echo $module;?>&amp;config-bucket-id=<?php echo $bucketId;?>" class="btn btn-danger">Delete bucket <?php echo $bucketId;?></a>
+			<input type="hidden" name="config-bucket-id" value="<?php echo $bucketId;?>"></input>
 			<?php }?>
 			<input class="btn btn-default pull-right" type="submit" value="Save changes"></input>
 			<input type="hidden" name="page" value="admin"></input>

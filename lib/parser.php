@@ -5,6 +5,8 @@ class HoobrConfigReader {
 
     private $config = array();
 
+    public $moduleName = null;
+
     public $defaultModule = null;
 
     public $overrideModule = null;
@@ -14,6 +16,8 @@ class HoobrConfigReader {
         global $require;
 
         $pathlib = $require("php-path");
+
+        $moduleName = $module;
 
         $this->overrideModule = $module;
 
@@ -156,6 +160,24 @@ class HoobrConfigReader {
 
     public function makeBucketModulePath($bucketId) {
         return $this->overrideModule . ".bucket." . $bucketId;
+    }
+
+    public function listBucketIds() {
+
+        $ids = array();
+
+        $dir = dirname($this->overrideModule);
+
+        $files = scandir($dir);
+
+        foreach ($files as $file) {
+            if (!in_array($file, array(".", "..")) && strpos($file, $this->moduleName . ".bucket.") !== false) {
+                $bucketId = explode(".", $file);
+                array_push($ids, $bucketId[count($bucketId) - 2]);
+            }
+        }
+
+        return $ids;
     }
 }
 

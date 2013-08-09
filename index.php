@@ -15,10 +15,10 @@ $utils = $require("hoobr-packages/lib/utils");
 $exports["admin-sidebar"] = function () use ($req, $render, $pathlib, $utils, $configReader) {
 
     $module = $req->param("config-module");
+    $bucketId = $req->param("config-bucket-id");
     $config = $configReader($module, $req->cfg("cfgroot"));
     $showBuckets = count($config->get()) > 0;
-    $bucketId = $req->param("config-bucket-id");
-    $buckets = array("1234");
+    $buckets = $config->listBucketIds();
     $modules = $utils->getModuleList($req->cfg("approot"));
 
     return $render($pathlib->join(__DIR__, "views", "admin-sidebar.php.html"), array(
@@ -83,10 +83,20 @@ $exports["admin-save"] = function () use ($req, $res) {
     $res->redirect("?page=admin&module=hoobr-config-manager&action=main&config-module=" . $module . "&config-bucket-id=" . $bucketId);
 };
 
+$exports["admin-delete-bucket"] = function () use ($req, $res) {
+
+    $module = $req->param("config-module");
+    $bucketId = $req->param("config-bucket-id");
+
+    $res->redirect("?page=admin&module=hoobr-config-manager&action=main&config-module=" . $module);
+};
+
 $exports["admin-new-bucket"] = function () use ($req, $res) {
 
     $module = $req->param("config-module");
-    $bucketId = uniqid();
+    $bucketId = $req->param("config-bucket-id");
+
+    $bucketId = preg_replace("/[^0-9A-Z]/i", "-", $bucketId);
 
     $res->redirect("?page=admin&module=hoobr-config-manager&action=main&config-module=" . $module . "&config-bucket-id=" . $bucketId);
 };

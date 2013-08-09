@@ -1,30 +1,42 @@
 <?php if ($showBuckets) {?>
 <div class="panel">
-    <div class="panel-heading">
-        <h3 class="panel-title">Buckets for <?php echo $currentModule;?></h3>
-    </div>
-    <ul class="nav nav-pills nav-stacked">
-        <?php foreach ($buckets as $bucketId) {?>
-        <li<?php if ($bucketId == $currentBucketId) {?> class="active"<?php }?>>
-            <a href="?page=admin&amp;module=hoobr-config-manager&amp;action=main&amp;config-module=<?php echo $currentModule;?>&amp;config-bucket-id=<?php echo $bucketId;?>"><?php echo $bucketId;?></a>
-        </li>
-        <?php }?>
-        <li>
-            <a href="?page=admin&amp;module=hoobr-config-manager&amp;action=new-bucket&amp;config-module=<?php echo $currentModule;?>">Create a new bucket</a>
-        </li>
-    </ul>
+	<div class="panel-heading">
+		<h3 class="panel-title">Buckets for <?php echo $currentModule;?></h3>
+	</div>
+	<ul class="nav nav-pills nav-stacked">
+		<?php foreach ($buckets as $bucketId) {?>
+		<li<?php if ($bucketId == $currentBucketId) {?> class="active"<?php }?>>
+			<a href="?page=admin&amp;module=hoobr-config-manager&amp;action=main&amp;config-module=<?php echo $currentModule;?>&amp;config-bucket-id=<?php echo $bucketId;?>"><?php echo $bucketId;?></a>
+		</li>
+		<?php }?>
+	</ul>
+	<div class="container panel-footer">
+		<form method="post">
+			<div class="form-group">
+				<input class="form-control" type="text" name="config-bucket-id" value="" placeholder="Enter a new bucket ID"></input>
+				<span class="help-block"><small>You can only use <b>0-9</b>, <b>A-Z</b>. Hit return once you are ready to create the bucket.</small></span>
+			</div>
+			<div class="form-group">
+				<!-- <input class="btn btn-default pull-right" type="submit" value="Create bucket"></input> -->
+				<input type="hidden" name="page" value="admin"></input>
+				<input type="hidden" name="module" value="hoobr-config-manager"></input>
+				<input type="hidden" name="action" value="new-bucket"></input>
+				<input type="hidden" name="config-module" value="<?php echo $currentModule;?>"></input>
+			</div>
+		</form>
+	</div>
 </div>
 <?php }?>
 
 <div class="panel">
-    <div class="panel-heading">
-        <h3 class="panel-title">Installed Modules</h3>
-    </div>
-    <ul class="nav nav-pills nav-stacked">
-        <?php foreach ($modules as $module) {?>
-        <li<?php if ($module == $currentModule) {?> class="active"<?php }?>>
-            <a href="?page=admin&amp;module=hoobr-config-manager&amp;action=main&amp;config-module=<?php echo $module;?>"><?php echo $module;?></a>
-        </li>
-        <?php }?>
-    </ul>
+	<div class="panel-heading">
+		<h3 class="panel-title">Installed Modules</h3>
+	</div>
+	<ul class="nav nav-pills nav-stacked">
+		<?php foreach ($modules as $module) {?>
+		<li<?php if ($module == $currentModule) {?> class="active"<?php }?>>
+			<a href="?page=admin&amp;module=hoobr-config-manager&amp;action=main&amp;config-module=<?php echo $module;?>"><?php echo $module;?></a>
+		</li>
+		<?php }?>
+	</ul>
 </div>
