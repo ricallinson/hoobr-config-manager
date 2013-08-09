@@ -19,7 +19,7 @@
 				<input class="form-control" type="text" name="override/<?php echo $key;?>" value="<?php echo $row["default"];?>" disabled></input>
 			</div>
 			<div class="col-lg-3">
-				<input class="form-control" type="text" name="override/<?php echo $key;?>" value="<?php echo $row["override"];?>"></input>
+				<input class="form-control" type="text" name="override/<?php echo $key;?>" value="<?php echo $row["override"];?>"<?php if ($bucketId) {?> disabled<?php }?>></input>
 			</div>
 			<div class="col-lg-3">
 				<input class="form-control" type="" name="bucket/<?php echo $key;?>" value="<?php echo $row["bucket"];?>"<?php if (!$bucketId) {?> disabled<?php }?>></input>
@@ -39,5 +39,5 @@
 			<input type="hidden" name="action" value="save"></input>
 			<input type="hidden" name="config-module" value="<?php echo $module;?>"></input>
 		</div>
-	</fom>
+	</form>
 </div>

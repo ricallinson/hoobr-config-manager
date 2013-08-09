@@ -4,8 +4,11 @@
 		<h3 class="panel-title">Buckets for <?php echo $currentModule;?></h3>
 	</div>
 	<ul class="nav nav-pills nav-stacked">
+		<li<?php if ($currentBucketId === null) {?> class="active"<?php }?>>
+			<a href="?page=admin&amp;module=hoobr-config-manager&amp;action=main&amp;config-module=<?php echo $currentModule;?>">No bucket</a>
+		</li>
 		<?php foreach ($buckets as $bucketId) {?>
-		<li<?php if ($bucketId == $currentBucketId) {?> class="active"<?php }?>>
+		<li<?php if ($bucketId === $currentBucketId) {?> class="active"<?php }?>>
 			<a href="?page=admin&amp;module=hoobr-config-manager&amp;action=main&amp;config-module=<?php echo $currentModule;?>&amp;config-bucket-id=<?php echo $bucketId;?>"><?php echo $bucketId;?></a>
 		</li>
 		<?php }?>
@@ -17,7 +20,6 @@
 				<span class="help-block"><small>You can only use <b>0-9</b>, <b>A-Z</b>. Hit return once you are ready to create the bucket.</small></span>
 			</div>
 			<div class="form-group">
-				<!-- <input class="btn btn-default pull-right" type="submit" value="Create bucket"></input> -->
 				<input type="hidden" name="page" value="admin"></input>
 				<input type="hidden" name="module" value="hoobr-config-manager"></input>
 				<input type="hidden" name="action" value="new-bucket"></input>
